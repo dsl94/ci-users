@@ -14,17 +14,17 @@ import java.util.UUID;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String username;
     private String firstName;
     private String lastName;
+    private String email;
     @JsonIgnore
     private String password;
-    private String locations;
     private boolean isActive;
     private boolean isDeleted;
-    @Column(name = "created_at", columnDefinition="DATETIME")
+    @Column(name = "created_at", columnDefinition = "DATETIME")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @JsonIgnore
@@ -82,14 +82,6 @@ public class User {
         this.password = password;
     }
 
-    public String getLocations() {
-        return locations;
-    }
-
-    public void setLocations(String locations) {
-        this.locations = locations;
-    }
-
     public boolean isActive() {
         return isActive;
     }
@@ -120,5 +112,13 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

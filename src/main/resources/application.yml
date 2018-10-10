@@ -1,0 +1,27 @@
+# Spring properties
+spring:
+  application:
+    name: user-service
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    name: user-service
+    driver-class-name: org.h2.Driver
+
+
+# Datasource
+
+# HTTP Server
+server:
+  port: 8090
+
+# Auth JWT
+jwt:
+  header: Authorization
+  secret: quebic_secret
+  expiration: 172800 #seconds
+  route:
+    authentication:
+      path: auth
+      refresh: refresh
