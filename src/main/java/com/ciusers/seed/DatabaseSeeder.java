@@ -38,9 +38,8 @@ public class DatabaseSeeder {
     }
 
     private void seedRolesTable() {
-        logger.info("Seeding roles 1");
         if (roleRepository.findAll().size() == 0) {
-            logger.info("Seeding roles 2");
+            logger.info("Seeding roles");
             Role superAdmin = new Role();
             superAdmin.setName("Superadmin");
             superAdmin.setRole(RolesConstants.ROLE_SUPERADMIN.name());
@@ -60,6 +59,7 @@ public class DatabaseSeeder {
 
     private void seedUsersTable() {
         if (userRepository.findAll().size() == 0) {
+            logger.info("Seeding users");
             Role superAdminRole = roleRepository.findByRoleIgnoreCase(RolesConstants.ROLE_SUPERADMIN.name());
             Role adminRole = roleRepository.findByRoleIgnoreCase(RolesConstants.ROLE_ADMIN.name());
             Role userRole = roleRepository.findByRoleIgnoreCase(RolesConstants.ROLE_USER.name());
