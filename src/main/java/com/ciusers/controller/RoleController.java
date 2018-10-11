@@ -6,10 +6,7 @@ import com.ciusers.error.exception.RoleException;
 import com.ciusers.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -32,5 +29,23 @@ public class RoleController {
     @GetMapping("/role/all")
     public ResponseEntity all() {
         return ResponseEntity.ok(roleService.getAll());
+    }
+
+    @GetMapping("/role/{id}")
+    public ResponseEntity get(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok(roleService.get(id));
+        } catch (RoleException e) {
+            return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage(), e.getErrorCode()));
+        }
+    }
+
+    @PutMapping("/role/{id}")
+    public ResponseEntity update(@PathVariable String id, @Valid @RequestBody RoleDTO role) {
+        try {
+            return ResponseEntity.ok(roleService.update(role, id));
+        } catch (RoleException e) {
+            return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage(), e.getErrorCode()));
+        }
     }
 }

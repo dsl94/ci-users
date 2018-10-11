@@ -6,12 +6,10 @@ import com.ciusers.error.ErrorCode;
 import com.ciusers.error.exception.RoleException;
 import com.ciusers.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.Max;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,8 +30,26 @@ public class RoleService {
 
     public List<RoleDTO> getAll() {
         List<Role> entites = roleRepository.findAll();
-        List<RoleDTO> roles = entites.stream().map(RoleDTO::new).collect(Collectors.toList());
 
-        return roles;
+        return entites.stream().map(RoleDTO::new).collect(Collectors.toList());
+    }
+
+    public RoleDTO get(String id) throws RoleException {
+        if (roleRepository.findById(UUID.fromString(id)).isPresent()) {
+            return new RoleDTO(roleRepository.findById(UUID.fromString(id)).get());
+        } else {
+            throw new RoleException("Role with that id not found", ErrorCode.NOT_FOUND);
+        }
+    }
+
+    public RoleDTO update(RoleDTO roleDTO, String id) throws RoleException {
+        if (roleRepository.findById(UUID.fromString(id)).isPresent()) {
+            Role existing = roleRepository.findById(UUID.fromString(id)).get();
+            existing.setRole(roleDTO.getRole());
+            existing.setName(roleDTO.getName());
+            return new RoleDTO(existing);
+        } else {
+            throw new RoleException("Role with that id not found", ErrorCode.NOT_FOUND);
+        }
     }
 }
