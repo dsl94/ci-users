@@ -2,9 +2,9 @@ package com.ciusers.error.exception;
 
 import com.ciusers.error.ErrorCode;
 
-public class RoleException extends AbstractException {
+public class UserException extends AbstractException {
 
-    public RoleException(String message, ErrorCode errorCode) {
+    public UserException(String message, ErrorCode errorCode) {
         super(message, errorCode);
     }
 }
