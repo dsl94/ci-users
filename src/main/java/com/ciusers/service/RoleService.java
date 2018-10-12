@@ -28,26 +28,24 @@ public class RoleService {
         return new RoleDTO(created);
     }
 
-    public List<RoleDTO> getAll() {
-        List<Role> entites = roleRepository.findAll();
-
-        return entites.stream().map(RoleDTO::new).collect(Collectors.toList());
+    public List<Role> getAll() {
+        return roleRepository.findAll();
     }
 
-    public RoleDTO get(String id) throws RoleException {
+    public Role get(String id) throws RoleException {
         if (roleRepository.findById(UUID.fromString(id)).isPresent()) {
-            return new RoleDTO(roleRepository.findById(UUID.fromString(id)).get());
+            return roleRepository.findById(UUID.fromString(id)).get();
         } else {
             throw new RoleException("Role with that id not found", ErrorCode.NOT_FOUND);
         }
     }
 
-    public RoleDTO update(RoleDTO roleDTO, String id) throws RoleException {
+    public Role update(RoleDTO roleDTO, String id) throws RoleException {
         if (roleRepository.findById(UUID.fromString(id)).isPresent()) {
             Role existing = roleRepository.findById(UUID.fromString(id)).get();
             existing.setRole(roleDTO.getRole());
             existing.setName(roleDTO.getName());
-            return new RoleDTO(existing);
+            return existing;
         } else {
             throw new RoleException("Role with that id not found", ErrorCode.NOT_FOUND);
         }
