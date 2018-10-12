@@ -48,4 +48,14 @@ public class RoleController {
             return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage(), e.getErrorCode()));
         }
     }
+
+    @DeleteMapping("/role/{id}")
+    public ResponseEntity delete(@PathVariable String id) {
+        try {
+            roleService.delete(id);
+            return ResponseEntity.ok(null);
+        } catch (RoleException e) {
+            return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage(), e.getErrorCode()));
+        }
+    }
 }
