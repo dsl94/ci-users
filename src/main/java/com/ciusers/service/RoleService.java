@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -33,8 +34,9 @@ public class RoleService {
     }
 
     public Role get(String id) throws RoleException {
-        if (roleRepository.findById(UUID.fromString(id)).isPresent()) {
-            return roleRepository.findById(UUID.fromString(id)).get();
+        Optional<Role> role = roleRepository.findById(UUID.fromString(id));
+        if (role.isPresent()) {
+            return role.get();
         } else {
             throw new RoleException("Role with that id not found", ErrorCode.NOT_FOUND);
         }
@@ -46,6 +48,16 @@ public class RoleService {
             existing.setRole(roleDTO.getRole());
             existing.setName(roleDTO.getName());
             return existing;
+        } else {
+            throw new RoleException("Role with that id not found", ErrorCode.NOT_FOUND);
+        }
+    }
+
+    public boolean delete(String id) throws RoleException {
+        Optional<Role> role = roleRepository.findById(UUID.fromString(id));
+        if (role.isPresent()) {
+            roleRepository.delete(role.get());
+            return true;
         } else {
             throw new RoleException("Role with that id not found", ErrorCode.NOT_FOUND);
         }
