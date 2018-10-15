@@ -2,6 +2,7 @@ package com.ciusers.security.config;
 
 import com.ciusers.security.JwtAuthenticationEntryPoint;
 import com.ciusers.security.JwtAuthenticationTokenFilter;
+import com.ciusers.security.RolesConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
                 .authorizeRequests()
+                .antMatchers("/role/**").hasRole("SUPERADMIN")
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 //allow anonymous auth requests
