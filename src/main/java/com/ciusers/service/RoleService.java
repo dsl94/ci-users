@@ -19,14 +19,12 @@ public class RoleService {
     @Autowired
     private RoleRepository roleRepository;
 
-    public RoleDTO create(RoleDTO roleDTO) throws RoleException {
+    public Role create(RoleDTO roleDTO) throws RoleException {
         if (roleRepository.findByRoleIgnoreCase(roleDTO.getRole()) != null) {
             throw new RoleException("Role already exist", ErrorCode.ROLE_EXIST);
         }
 
-        Role created = roleRepository.save(roleDTO.toEntity());
-
-        return new RoleDTO(created);
+        return roleRepository.save(roleDTO.toEntity());
     }
 
     public List<Role> getAll() {
