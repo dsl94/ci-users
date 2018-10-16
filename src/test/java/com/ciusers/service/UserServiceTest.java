@@ -17,8 +17,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.xml.bind.ValidationException;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -88,6 +87,86 @@ public class UserServiceTest {
         Mockito.when(roleRepository.findByRoleIgnoreCase("ROLE")).thenReturn(null);
 
         underTest.create(userDTO);
+    }
+
+    @Test
+    public void testGetAllUsers() {
+        List<User> expected = Arrays.asList(new User(), new User(), new User());
+        Mockito.when(userRepository.findAll()).thenReturn(expected);
+
+        List<User> actual = underTest.getAll();
+
+        assertEquals(expected.size(), actual.size());
+    }
+
+    @Test
+    public void testGetOneUser() throws UserException {
+        User expected = createUser();
+        Mockito.when(userRepository.findById(expected.getId())).thenReturn(Optional.of(expected));
+
+        User actual = underTest.get(expected.getId().toString());
+
+        assertEquals(expected, actual);
+    }
+
+    @Test(expected = UserException.class)
+    public void testGetOneNotFound() throws UserException {
+        UUID id = UUID.randomUUID();
+        Mockito.when(userRepository.findById(id)).thenReturn(Optional.empty());
+
+        underTest.get(id.toString());
+    }
+
+    @Test
+    public void testUpdate() throws RoleException, UserException {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setEmail("user1@mail.com");
+        userDTO.setUsername("username1");
+        userDTO.setPassword("pass");
+        userDTO.setRoles(Collections.singleton("ADMIN"));
+        Role admin = new Role();
+        User existing = createUser();
+
+        Mockito.when(roleRepository.findByRoleIgnoreCase("ADMIN")).thenReturn(admin);
+        Mockito.when(userRepository.findById(existing.getId())).thenReturn(Optional.of(existing));
+        Mockito.when(passwordEncoder.encode(userDTO.getPassword())).thenReturn("password");
+        Mockito.when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(existing);
+
+        User edited = underTest.update(userDTO, existing.getId().toString());
+
+        assertEquals(userDTO.getUsername(), edited.getUsername());
+        assertEquals(userDTO.getEmail(), edited.getEmail());
+    }
+
+    @Test(expected = UserException.class)
+    public void testUpdateUserNotFound() throws RoleException, UserException {
+        UUID id = UUID.randomUUID();
+        UserDTO dto = new UserDTO();
+
+        Mockito.when(userRepository.findById(id)).thenReturn(Optional.empty());
+
+        underTest.update(dto, id.toString());
+    }
+
+    @Test
+    public void testDelete() throws UserException {
+        User user = createUser();
+
+        Mockito.when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+        boolean result = underTest.delete(user.getId().toString());
+
+        assertTrue(result);
+        Mockito.verify(userRepository, Mockito.times(1)).delete(user);
+    }
+
+    @Test(expected = UserException.class)
+    public void testDeleteNotFound() throws UserException {
+        UUID id = UUID.randomUUID();
+
+        Mockito.when(userRepository.findById(id)).thenReturn(Optional.empty());
+
+        underTest.delete(id.toString());
     }
 
     private User createUser() {
