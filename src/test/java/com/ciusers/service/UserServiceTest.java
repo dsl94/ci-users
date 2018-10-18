@@ -1,10 +1,17 @@
 package com.ciusers.service;
 
+import com.ciusers.controller.dto.PasswordResetTokenResponseDTO;
+import com.ciusers.controller.dto.RequestPasswordResetDTO;
+import com.ciusers.controller.dto.ResetPasswordDTO;
 import com.ciusers.controller.dto.UserDTO;
+import com.ciusers.entity.PasswordResetToken;
 import com.ciusers.entity.Role;
 import com.ciusers.entity.User;
+import com.ciusers.error.exception.PasswordResetException;
 import com.ciusers.error.exception.RoleException;
+import com.ciusers.error.exception.TokenException;
 import com.ciusers.error.exception.UserException;
+import com.ciusers.repository.PasswordResetTokenRepository;
 import com.ciusers.repository.RoleRepository;
 import com.ciusers.repository.UserRepository;
 import org.junit.Test;
@@ -30,6 +37,8 @@ public class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private PasswordResetTokenRepository passwordResetTokenRepository;
     @InjectMocks
     private UserService underTest;
 
@@ -167,6 +176,46 @@ public class UserServiceTest {
         Mockito.when(userRepository.findById(id)).thenReturn(Optional.empty());
 
         underTest.delete(id.toString());
+    }
+
+    @Test
+    public void testGenerateToken() {
+        PasswordResetToken token = new PasswordResetToken();
+        token.setToken("TOKEN");
+        RequestPasswordResetDTO dto = new RequestPasswordResetDTO();
+        dto.setEmail("email@email.com");
+
+        Mockito.when(userRepository.findByEmailIgnoreCase("email@email.com")).thenReturn(createUser());
+
+        PasswordResetTokenResponseDTO actual = underTest.generatePasswordResetToken(dto);
+
+        assertNotNull(actual);
+    }
+
+    @Test
+    public void testPasswordReset() throws TokenException, PasswordResetException {
+        PasswordResetToken token = new PasswordResetToken();
+        token.setToken("TOKEN");
+        User user = createUser();
+        token.setUser(user);
+        ResetPasswordDTO dto = new ResetPasswordDTO();
+        dto.setPassword("pass");
+        dto.setPasswordRetyped("pass");
+
+        Mockito.when(passwordResetTokenRepository.findByToken("TOKEN")).thenReturn(token);
+        Mockito.when(passwordEncoder.encode("pass")).thenReturn("pass");
+
+        underTest.resetPassword("TOKEN", dto);
+
+        Mockito.verify(userRepository, Mockito.times(1)).save(user);
+        Mockito.verify(passwordResetTokenRepository, Mockito.times(1)).delete(token);
+    }
+
+    @Test(expected = TokenException.class)
+    public void testResetPasswordNotFoundToken() throws TokenException, PasswordResetException {
+        Mockito.when(passwordResetTokenRepository.findByToken("TOKEN")).thenReturn(null);
+
+        underTest.resetPassword("TOKEN", new ResetPasswordDTO());
     }
 
     private User createUser() {
