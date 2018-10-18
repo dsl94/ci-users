@@ -1,9 +1,12 @@
 package com.ciusers.controller;
 
-import com.ciusers.controller.dto.ResetPasswordRequestDTO;
+import com.ciusers.controller.dto.RequestPasswordResetDTO;
+import com.ciusers.controller.dto.ResetPasswordDTO;
 import com.ciusers.controller.dto.UserDTO;
 import com.ciusers.error.ErrorMessage;
+import com.ciusers.error.exception.PasswordResetException;
 import com.ciusers.error.exception.RoleException;
+import com.ciusers.error.exception.TokenException;
 import com.ciusers.error.exception.UserException;
 import com.ciusers.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 import javax.xml.bind.ValidationException;
 
 @RestController
@@ -62,7 +66,17 @@ public class UserController {
     }
 
     @PostMapping("/password/forgotten")
-    public ResponseEntity requestPasswordReset(@Valid @RequestBody ResetPasswordRequestDTO passwordReset) {
+    public ResponseEntity requestPasswordReset(@Valid @RequestBody RequestPasswordResetDTO passwordReset) {
         return ResponseEntity.ok(userService.generatePasswordResetToken(passwordReset));
+    }
+
+    @PostMapping("/password/reset/{token}")
+    public ResponseEntity resetPassword(@PathVariable String token, @Valid @RequestBody ResetPasswordDTO resetPassword) {
+        try {
+            userService.resetPassword(token, resetPassword);
+            return ResponseEntity.ok(null);
+        } catch (TokenException | PasswordResetException e) {
+            return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage(), e.getErrorCode()));
+        }
     }
 }

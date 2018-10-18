@@ -3,7 +3,7 @@ package com.ciusers.controller.dto;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
-public class ResetPasswordRequestDTO {
+public class RequestPasswordResetDTO {
 
     @NotNull
     @Email

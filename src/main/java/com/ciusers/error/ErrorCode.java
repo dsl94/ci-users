@@ -6,7 +6,6 @@ public enum ErrorCode {
     ROLE_EXIST,
     USERNAME_EXIST,
     EMAIL_EXIST,
-    TOKEN_NOT_FOUND,
     TOKEN_NOT_VALID,
     PASSWORDS_NOT_EQUAL
 }

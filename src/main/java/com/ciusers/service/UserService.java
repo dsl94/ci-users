@@ -1,20 +1,22 @@
 package com.ciusers.service;
 
 import com.ciusers.controller.dto.PasswordResetTokenResponseDTO;
-import com.ciusers.controller.dto.ResetPasswordRequestDTO;
+import com.ciusers.controller.dto.RequestPasswordResetDTO;
+import com.ciusers.controller.dto.ResetPasswordDTO;
 import com.ciusers.controller.dto.UserDTO;
 import com.ciusers.entity.PasswordResetToken;
 import com.ciusers.entity.Role;
 import com.ciusers.entity.User;
 import com.ciusers.error.ErrorCode;
+import com.ciusers.error.exception.PasswordResetException;
 import com.ciusers.error.exception.RoleException;
+import com.ciusers.error.exception.TokenException;
 import com.ciusers.error.exception.UserException;
 import com.ciusers.repository.PasswordResetTokenRepository;
 import com.ciusers.repository.RoleRepository;
 import com.ciusers.repository.UserRepository;
 import org.apache.commons.text.CharacterPredicates;
 import org.apache.commons.text.RandomStringGenerator;
-import org.omg.PortableInterceptor.USER_EXCEPTION;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -114,7 +116,7 @@ public class UserService {
     }
 
     // IMPORTANT - WE DON'T THROW EXCEPTION IF USER IS NOT FOUND, JUST RETURN TOKEN IF USER IS FOUND
-    public PasswordResetTokenResponseDTO generatePasswordResetToken(ResetPasswordRequestDTO dto) {
+    public PasswordResetTokenResponseDTO generatePasswordResetToken(RequestPasswordResetDTO dto) {
         User user = userRepository.findByEmailIgnoreCase(dto.getEmail());
         if (user != null) {
             PasswordResetToken passwordResetToken = new PasswordResetToken();
@@ -135,6 +137,25 @@ public class UserService {
         }
 
         return null;
+    }
+
+    public void resetPassword(String token, ResetPasswordDTO dto) throws TokenException, PasswordResetException {
+        PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
+        if (passwordResetToken == null) {
+            throw new TokenException("Token not found", ErrorCode.NOT_FOUND);
+        }
+        if (new Date().after(passwordResetToken.getValid())) {
+            throw new TokenException("Token has expired", ErrorCode.TOKEN_NOT_VALID);
+        }
+        if (!dto.getPassword().equals(dto.getPasswordRetyped())) {
+            throw new PasswordResetException("Password must be same", ErrorCode.PASSWORDS_NOT_EQUAL);
+        }
+
+        User user = passwordResetToken.getUser();
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+
+        userRepository.save(user);
+        passwordResetTokenRepository.delete(passwordResetToken);
     }
 
     private void extractRoles(UserDTO userDTO, Set<Role> roles) throws RoleException {
