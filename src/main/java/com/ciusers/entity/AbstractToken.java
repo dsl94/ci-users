@@ -1,5 +1,8 @@
 package com.ciusers.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -14,11 +17,19 @@ public abstract class AbstractToken {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Type(type="uuid-char")
     private UUID id;
+
     @Column(nullable = false)
     private String token;
+
     @Column(name = "created_at", columnDefinition = "DATETIME")
     @Temporal(TemporalType.TIMESTAMP)
     private Date valid;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private User user;
 
     public AbstractToken() {
         Calendar c=new GregorianCalendar();
@@ -52,5 +63,13 @@ public abstract class AbstractToken {
 
     public void setValid(Date valid) {
         this.valid = valid;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
