@@ -1,13 +1,19 @@
 package com.ciusers.service;
 
+import com.ciusers.controller.dto.PasswordResetTokenResponseDTO;
+import com.ciusers.controller.dto.ResetPasswordRequestDTO;
 import com.ciusers.controller.dto.UserDTO;
+import com.ciusers.entity.PasswordResetToken;
 import com.ciusers.entity.Role;
 import com.ciusers.entity.User;
 import com.ciusers.error.ErrorCode;
 import com.ciusers.error.exception.RoleException;
 import com.ciusers.error.exception.UserException;
+import com.ciusers.repository.PasswordResetTokenRepository;
 import com.ciusers.repository.RoleRepository;
 import com.ciusers.repository.UserRepository;
+import org.apache.commons.text.CharacterPredicates;
+import org.apache.commons.text.RandomStringGenerator;
 import org.omg.PortableInterceptor.USER_EXCEPTION;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +33,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
 
     public User create(UserDTO userDTO) throws UserException, RoleException, ValidationException {
         if (userRepository.findByUsernameIgnoreCase(userDTO.getUsername()) != null) {
@@ -102,6 +111,30 @@ public class UserService {
 
         userRepository.delete(user.get());
         return true;
+    }
+
+    // IMPORTANT - WE DON'T THROW EXCEPTION IF USER IS NOT FOUND, JUST RETURN TOKEN IF USER IS FOUND
+    public PasswordResetTokenResponseDTO generatePasswordResetToken(ResetPasswordRequestDTO dto) {
+        User user = userRepository.findByEmailIgnoreCase(dto.getEmail());
+        if (user != null) {
+            PasswordResetToken passwordResetToken = new PasswordResetToken();
+            RandomStringGenerator randomStringGenerator =
+                    new RandomStringGenerator.Builder()
+                            .withinRange('0', 'z')
+                            .filteredBy(CharacterPredicates.LETTERS, CharacterPredicates.DIGITS)
+                            .build();
+
+            passwordResetToken.setToken(randomStringGenerator.generate(20));
+            passwordResetToken.setUser(user);
+
+            passwordResetTokenRepository.save(passwordResetToken);
+
+            PasswordResetTokenResponseDTO response = new PasswordResetTokenResponseDTO();
+            response.setToken(passwordResetToken.getToken());
+            return response;
+        }
+
+        return null;
     }
 
     private void extractRoles(UserDTO userDTO, Set<Role> roles) throws RoleException {

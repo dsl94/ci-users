@@ -62,6 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 //allow anonymous auth requests
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/password/**").permitAll()
 
                 //authenticated requests
                 .anyRequest().authenticated();

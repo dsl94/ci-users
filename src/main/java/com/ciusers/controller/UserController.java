@@ -1,5 +1,6 @@
 package com.ciusers.controller;
 
+import com.ciusers.controller.dto.ResetPasswordRequestDTO;
 import com.ciusers.controller.dto.UserDTO;
 import com.ciusers.error.ErrorMessage;
 import com.ciusers.error.exception.RoleException;
@@ -58,5 +59,10 @@ public class UserController {
         } catch (UserException e) {
             return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage(), e.getErrorCode()));
         }
+    }
+
+    @PostMapping("/password/forgotten")
+    public ResponseEntity requestPasswordReset(@Valid @RequestBody ResetPasswordRequestDTO passwordReset) {
+        return ResponseEntity.ok(userService.generatePasswordResetToken(passwordReset));
     }
 }

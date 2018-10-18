@@ -25,9 +25,8 @@ public abstract class AbstractToken {
     @Temporal(TemporalType.TIMESTAMP)
     private Date valid;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne
+    @JoinColumn(name="user_id")
     @JsonIgnore
     private User user;
 
