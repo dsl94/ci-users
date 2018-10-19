@@ -1,8 +1,10 @@
 package com.ciusers.controller;
 
+import com.ciusers.controller.dto.AccountUpdateDTO;
 import com.ciusers.controller.dto.RequestPasswordResetDTO;
 import com.ciusers.controller.dto.ResetPasswordDTO;
 import com.ciusers.controller.dto.UserDTO;
+import com.ciusers.entity.User;
 import com.ciusers.error.ErrorMessage;
 import com.ciusers.error.exception.PasswordResetException;
 import com.ciusers.error.exception.RoleException;
@@ -11,11 +13,13 @@ import com.ciusers.error.exception.UserException;
 import com.ciusers.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 import javax.xml.bind.ValidationException;
+import javax.xml.ws.Response;
 
 @RestController
 public class UserController {
@@ -78,5 +82,10 @@ public class UserController {
         } catch (TokenException | PasswordResetException e) {
             return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage(), e.getErrorCode()));
         }
+    }
+
+    @PutMapping("/account")
+    public ResponseEntity updateAccount(Authentication authentication, @Valid @RequestBody AccountUpdateDTO accountUpdate) {
+        return ResponseEntity.ok(userService.updateAccount(authentication.getName(), accountUpdate));
     }
 }

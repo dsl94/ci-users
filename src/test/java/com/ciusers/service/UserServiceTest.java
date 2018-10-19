@@ -1,9 +1,6 @@
 package com.ciusers.service;
 
-import com.ciusers.controller.dto.PasswordResetTokenResponseDTO;
-import com.ciusers.controller.dto.RequestPasswordResetDTO;
-import com.ciusers.controller.dto.ResetPasswordDTO;
-import com.ciusers.controller.dto.UserDTO;
+import com.ciusers.controller.dto.*;
 import com.ciusers.entity.PasswordResetToken;
 import com.ciusers.entity.Role;
 import com.ciusers.entity.User;
@@ -216,6 +213,22 @@ public class UserServiceTest {
         Mockito.when(passwordResetTokenRepository.findByToken("TOKEN")).thenReturn(null);
 
         underTest.resetPassword("TOKEN", new ResetPasswordDTO());
+    }
+
+    @Test
+    public void testAccountUpdate() {
+        User user = createUser();
+        AccountUpdateDTO dto = new AccountUpdateDTO();
+        dto.setFirstName("FIRSTNAME");
+        User excpectedUpdated = user;
+        user.setFirstName(dto.getFirstName());
+
+        Mockito.when(userRepository.findByUsernameIgnoreCase(user.getUsername())).thenReturn(user);
+        Mockito.when(userRepository.save(ArgumentMatchers.any(User.class))).thenReturn(excpectedUpdated);
+
+        User updated = underTest.updateAccount(user.getUsername(), dto);
+
+        assertEquals(dto.getFirstName(), updated.getFirstName());
     }
 
     private User createUser() {

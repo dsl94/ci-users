@@ -1,9 +1,6 @@
 package com.ciusers.service;
 
-import com.ciusers.controller.dto.PasswordResetTokenResponseDTO;
-import com.ciusers.controller.dto.RequestPasswordResetDTO;
-import com.ciusers.controller.dto.ResetPasswordDTO;
-import com.ciusers.controller.dto.UserDTO;
+import com.ciusers.controller.dto.*;
 import com.ciusers.entity.PasswordResetToken;
 import com.ciusers.entity.Role;
 import com.ciusers.entity.User;
@@ -156,6 +153,27 @@ public class UserService {
 
         userRepository.save(user);
         passwordResetTokenRepository.delete(passwordResetToken);
+    }
+
+    public User updateAccount(String userName, AccountUpdateDTO dto) {
+        User user = userRepository.findByUsernameIgnoreCase(userName);
+        if (dto.getUsername() != null) {
+            user.setUsername(dto.getUsername());
+        }
+        if (dto.getEmail() != null) {
+            user.setEmail(dto.getEmail());
+        }
+        if (dto.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+        if (dto.getFirstName() != null) {
+            user.setFirstName(dto.getFirstName());
+        }
+        if (dto.getLastName() != null) {
+            user.setLastName(dto.getLastName());
+        }
+
+        return userRepository.save(user);
     }
 
     private void extractRoles(UserDTO userDTO, Set<Role> roles) throws RoleException {
