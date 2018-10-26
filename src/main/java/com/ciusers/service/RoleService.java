@@ -6,8 +6,9 @@ import com.ciusers.error.ErrorCode;
 import com.ciusers.error.exception.RoleException;
 import com.ciusers.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,8 +28,8 @@ public class RoleService {
         return roleRepository.save(roleDTO.toEntity());
     }
 
-    public List<Role> getAll() {
-        return roleRepository.findAll();
+    public Page<Role> getAll(Pageable pageable) {
+        return roleRepository.findAll(pageable);
     }
 
     public Role get(String id) throws RoleException {

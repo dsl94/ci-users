@@ -12,6 +12,7 @@ import com.ciusers.error.exception.TokenException;
 import com.ciusers.error.exception.UserException;
 import com.ciusers.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -37,8 +38,8 @@ public class UserController {
     }
 
     @GetMapping("/user/all")
-    public ResponseEntity all() {
-        return ResponseEntity.ok(userService.getAll());
+    public ResponseEntity all(Pageable pageable) {
+        return ResponseEntity.ok(userService.getAll(pageable).getContent());
     }
 
     @GetMapping("/user/{id}")
