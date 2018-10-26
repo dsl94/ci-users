@@ -3,6 +3,8 @@ package com.ciusers.controller;
 import com.ciusers.security.JwtTokenUtil;
 import com.ciusers.security.dto.JwtAuthenticationDto;
 import com.ciusers.security.dto.JwtResponse;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +57,7 @@ public class AuthController {
 
     }
 
-    @RequestMapping("/current")
+    @GetMapping("/current")
     public ResponseEntity<UserDetails> getCurrent() throws Exception{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
