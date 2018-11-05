@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -66,12 +67,15 @@ public class RoleServiceTest {
     @Test
     public void testGetAll() {
         List<Role> expected = Arrays.asList(new Role(), new Role());
+        Pageable pageable = getPageable();
+        long start = pageable.getOffset();
+        long end = (start + pageable.getPageSize()) > expected.size() ? expected.size() : (start + pageable.getPageSize());
+        Page<Role> pages = new PageImpl<Role>(expected.subList((int)start, (int)end), pageable, expected.size());
+        Mockito.when(roleRepository.findAll(Mockito.any(Pageable.class))).thenReturn(pages);
 
-        Mockito.when(roleRepository.findAll()).thenReturn(expected);
+        Page<Role> actual = underTest.getAll(pageable);
 
-        List<Role> actual = underTest.getAll();
-
-        assertEquals(expected, actual);
+        assertEquals(pages, actual);
     }
 
     @Test
@@ -138,5 +142,50 @@ public class RoleServiceTest {
         Mockito.when(roleRepository.findById(id)).thenReturn(Optional.empty());
 
         underTest.delete(id.toString());
+    }
+
+    private Pageable getPageable() {
+        return new Pageable() {
+            @Override
+            public int getPageNumber() {
+                return 0;
+            }
+
+            @Override
+            public int getPageSize() {
+                return 10;
+            }
+
+            @Override
+            public long getOffset() {
+                return 0;
+            }
+
+            @Override
+            public Sort getSort() {
+                return null;
+            }
+
+            @Override
+            public Pageable next() {
+                return null;
+            }
+
+            @Override
+            public Pageable previousOrFirst() {
+                return null;
+            }
+
+            @Override
+            public Pageable first() {
+                return null;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return false;
+            }
+        };
+
     }
 }
