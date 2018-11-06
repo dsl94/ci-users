@@ -5,6 +5,7 @@ import com.ciusers.error.ErrorMessage;
 import com.ciusers.error.exception.RoleException;
 import com.ciusers.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +28,8 @@ public class RoleController {
     }
 
     @GetMapping("/role/all")
-    public ResponseEntity all() {
-        return ResponseEntity.ok(roleService.getAll());
+    public ResponseEntity all(Pageable pageable) {
+        return ResponseEntity.ok(roleService.getAll(pageable).getContent());
     }
 
     @GetMapping("/role/{id}")

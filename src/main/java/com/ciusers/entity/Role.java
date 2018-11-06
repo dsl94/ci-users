@@ -5,6 +5,8 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -18,11 +20,10 @@ public class Role implements Serializable {
     private String name;
     private String role;
     @Column(name = "created_at", columnDefinition="DATETIME")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     public Role() {
-        this.createdAt = new Date();
+        this.createdAt = LocalDateTime.now(Clock.systemUTC());
     }
 
     public UUID getId() {
@@ -49,11 +50,11 @@ public class Role implements Serializable {
         this.role = role;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 }

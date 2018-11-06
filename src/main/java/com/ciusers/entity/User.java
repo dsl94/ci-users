@@ -6,6 +6,8 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,8 +30,7 @@ public class User implements Serializable {
     private boolean isActive;
     private boolean isDeleted;
     @Column(name = "created_at", columnDefinition = "DATETIME")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private LocalDateTime createdAt;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
@@ -41,7 +42,7 @@ public class User implements Serializable {
     public User() {
         this.isActive = false;
         this.isDeleted = false;
-        this.createdAt = new Date();
+        this.createdAt = LocalDateTime.now(Clock.systemUTC());
     }
 
     public UUID getId() {
@@ -100,11 +101,11 @@ public class User implements Serializable {
         isDeleted = deleted;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
