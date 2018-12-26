@@ -4,7 +4,7 @@ import com.ciusers.controller.dto.*;
 import com.ciusers.entity.PasswordResetToken;
 import com.ciusers.entity.Role;
 import com.ciusers.entity.User;
-import com.ciusers.error.ErrorCode;
+import com.ciusers.error.UserErrorCode;
 import com.ciusers.error.exception.PasswordResetException;
 import com.ciusers.error.exception.RoleException;
 import com.ciusers.error.exception.TokenException;
@@ -40,10 +40,10 @@ public class UserService {
 
     public User create(UserDTO userDTO) throws UserException, RoleException, ValidationException {
         if (userRepository.findByUsernameIgnoreCase(userDTO.getUsername()) != null) {
-            throw new UserException("User with that username already exist", ErrorCode.USERNAME_EXIST);
+            throw new UserException("User with that username already exist", UserErrorCode.USERNAME_EXIST);
         }
         if (userRepository.findByEmailIgnoreCase(userDTO.getEmail()) != null) {
-            throw new UserException("User with that email already exist", ErrorCode.EMAIL_EXIST);
+            throw new UserException("User with that email already exist", UserErrorCode.EMAIL_EXIST);
         }
         if (userDTO.getPassword() == null) {
             throw new ValidationException("Password is mandatory");
@@ -68,7 +68,7 @@ public class UserService {
     public User get(String id) throws UserException {
         Optional<User> user = userRepository.findById(UUID.fromString(id));
         if (!user.isPresent()) {
-            throw new UserException("User with that id not found", ErrorCode.NOT_FOUND);
+            throw new UserException("User with that id not found", UserErrorCode.NOT_FOUND);
         } else {
             return user.get();
         }
@@ -78,10 +78,10 @@ public class UserService {
         Optional<User> user = userRepository.findById(UUID.fromString(id));
         if (user.isPresent()) {
             if (!user.get().getUsername().equals(userDTO.getUsername()) && userRepository.findByUsernameIgnoreCase(userDTO.getUsername()) != null) {
-                throw new UserException("User with that username already exist", ErrorCode.USERNAME_EXIST);
+                throw new UserException("User with that username already exist", UserErrorCode.USERNAME_EXIST);
             }
             if (!user.get().getEmail().equals(userDTO.getEmail()) && userRepository.findByEmailIgnoreCase(userDTO.getEmail()) != null) {
-                throw new UserException("User with that email already exist", ErrorCode.EMAIL_EXIST);
+                throw new UserException("User with that email already exist", UserErrorCode.EMAIL_EXIST);
             }
 
             Set<Role> roles = new HashSet<>();
@@ -100,14 +100,14 @@ public class UserService {
 
             return userRepository.save(user.get());
         } else {
-            throw new UserException("User with that id not found", ErrorCode.NOT_FOUND);
+            throw new UserException("User with that id not found", UserErrorCode.NOT_FOUND);
         }
     }
 
     public boolean delete(String id) throws UserException {
         Optional<User> user = userRepository.findById(UUID.fromString(id));
         if (!user.isPresent()) {
-            throw new UserException("User with that id does not exist", ErrorCode.NOT_FOUND);
+            throw new UserException("User with that id does not exist", UserErrorCode.NOT_FOUND);
         }
 
         userRepository.delete(user.get());
@@ -141,13 +141,13 @@ public class UserService {
     public void resetPassword(String token, ResetPasswordDTO dto) throws TokenException, PasswordResetException {
         PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
         if (passwordResetToken == null) {
-            throw new TokenException("Token not found", ErrorCode.NOT_FOUND);
+            throw new TokenException("Token not found", UserErrorCode.NOT_FOUND);
         }
         if (new Date().after(passwordResetToken.getValid())) {
-            throw new TokenException("Token has expired", ErrorCode.TOKEN_NOT_VALID);
+            throw new TokenException("Token has expired", UserErrorCode.TOKEN_NOT_VALID);
         }
         if (!dto.getPassword().equals(dto.getPasswordRetyped())) {
-            throw new PasswordResetException("Password must be same", ErrorCode.PASSWORDS_NOT_EQUAL);
+            throw new PasswordResetException("Password must be same", UserErrorCode.PASSWORDS_NOT_EQUAL);
         }
 
         User user = passwordResetToken.getUser();
@@ -182,7 +182,7 @@ public class UserService {
         for (String roleName : userDTO.getRoles()) {
             Role role = roleRepository.findByRoleIgnoreCase(roleName);
             if (role == null) {
-                throw  new RoleException("Role " + roleName +" does not exist", ErrorCode.NOT_FOUND);
+                throw  new RoleException("Role " + roleName +" does not exist", UserErrorCode.NOT_FOUND);
             }
             roles.add(role);
         }

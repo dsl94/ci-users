@@ -1,11 +1,10 @@
 package com.ciusers.controller;
 
+import com.ci.commons.error.ErrorMessage;
 import com.ciusers.controller.dto.AccountUpdateDTO;
 import com.ciusers.controller.dto.RequestPasswordResetDTO;
 import com.ciusers.controller.dto.ResetPasswordDTO;
 import com.ciusers.controller.dto.UserDTO;
-import com.ciusers.entity.User;
-import com.ciusers.error.ErrorMessage;
 import com.ciusers.error.exception.PasswordResetException;
 import com.ciusers.error.exception.RoleException;
 import com.ciusers.error.exception.TokenException;
@@ -18,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 import javax.xml.bind.ValidationException;
 import javax.xml.ws.Response;
 

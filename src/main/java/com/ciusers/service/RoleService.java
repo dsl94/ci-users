@@ -2,7 +2,7 @@ package com.ciusers.service;
 
 import com.ciusers.controller.dto.RoleDTO;
 import com.ciusers.entity.Role;
-import com.ciusers.error.ErrorCode;
+import com.ciusers.error.UserErrorCode;
 import com.ciusers.error.exception.RoleException;
 import com.ciusers.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class RoleService {
 
     public Role create(RoleDTO roleDTO) throws RoleException {
         if (roleRepository.findByRoleIgnoreCase(roleDTO.getRole()) != null) {
-            throw new RoleException("Role already exist", ErrorCode.ROLE_EXIST);
+            throw new RoleException("Role already exist", UserErrorCode.ROLE_EXIST);
         }
 
         return roleRepository.save(roleDTO.toEntity());
@@ -37,7 +37,7 @@ public class RoleService {
         if (role.isPresent()) {
             return role.get();
         } else {
-            throw new RoleException("Role with that id not found", ErrorCode.NOT_FOUND);
+            throw new RoleException("Role with that id not found", UserErrorCode.NOT_FOUND);
         }
     }
 
@@ -48,7 +48,7 @@ public class RoleService {
             existing.setName(roleDTO.getName());
             return existing;
         } else {
-            throw new RoleException("Role with that id not found", ErrorCode.NOT_FOUND);
+            throw new RoleException("Role with that id not found", UserErrorCode.NOT_FOUND);
         }
     }
 
@@ -58,7 +58,7 @@ public class RoleService {
             roleRepository.delete(role.get());
             return true;
         } else {
-            throw new RoleException("Role with that id not found", ErrorCode.NOT_FOUND);
+            throw new RoleException("Role with that id not found", UserErrorCode.NOT_FOUND);
         }
     }
 }

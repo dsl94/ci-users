@@ -1,7 +1,7 @@
 package com.ciusers.controller;
 
+import com.ci.commons.error.ErrorMessage;
 import com.ciusers.controller.dto.RoleDTO;
-import com.ciusers.error.ErrorMessage;
 import com.ciusers.error.exception.RoleException;
 import com.ciusers.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
